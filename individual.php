@@ -49,9 +49,14 @@ while ($row = mysqli_fetch_array($result)) {
     try {
         unset($output);
         exec("mysqldump --user={$dbUser} --password={$dbPass} --host={$dbHost} {$database} --result-file={$filePath} 2>&1 | " . removeWarning(), $output);
-        echo "<li style='color: orange'>";
-        print_r($output);
-        echo "</li>";
+        if ($output[0] == 'mysqldump: [Warning] Using a password on the command line interface can be insecure.') {
+            array_splice($output, 0, 1);
+        }
+        if (count($output) !== 0) {
+            echo "<li style='color: orange'>";
+            print_r($output);
+            echo "</li>";
+        }
     } catch (Exception $e) {
         print_r("<li style='color: #FF0000;'>" . $e->getMessage() . "</li>");
         echo "<li style='color: #FF0000;'>Failed...</li>";

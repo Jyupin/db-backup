@@ -33,9 +33,14 @@ $filePath .= 'all_databases' . date('_H-i-s') . '.sql';
 print_r("<li>Process started...</li>");
 try {
     exec("mysqldump --user={$dbUser} --password={$dbPass} --host={$dbHost} --all-databases --result-file={$filePath} 2>&1", $output);
-    echo "<li style='color: orange'>";
-    print_r($output);
-    echo "</li>";
+    if ($output[0] == 'mysqldump: [Warning] Using a password on the command line interface can be insecure.') {
+        array_splice($output, 0, 1);
+    }
+    if (count($output) !== 0) {
+        echo "<li style='color: orange'>";
+        print_r($output);
+        echo "</li>";
+    }
 } catch (Exception $e) {
     print_r("<li style='color: #FF0000;'>" . $e->getMessage() . "</li>");
     echo "<li style='color: #FF0000;'>Failed...</li>";
